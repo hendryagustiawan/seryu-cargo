@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
-import Navbar from "../Components/Navbar";
-import { useParams } from "react-router-dom";
+import React, { Suspense, lazy, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getMovieById, getNowPlaying } from "../store/Actions";
 import formatTime from "../lib/changeFormatTime";
 import changeYears from "../lib/getYears";
-import NowPlayingCard from "../Components/NowPlayingCard";
+import { useParams } from "react-router-dom";
+
+const NowPlayingCard = lazy(() => import("../Components/NowPlayingCard"));
 
 export default function Detail() {
   const { id } = useParams();
@@ -51,9 +51,11 @@ export default function Detail() {
         <div className="container ">
           <h4 className="fs-bold text-white">Recommendations</h4>
           <div className="d-flex flex-row mb-3 overflow-auto">
-            {nowPlaying?.results?.map((el) => {
-              return <NowPlayingCard key={el?.id} id={el.id} image={el?.poster_path} title={el?.title} years={el?.release_date} />;
-            })}
+            <Suspense fallback={<div>Loading...</div>}>
+              {nowPlaying?.results?.map((el) => {
+                return <NowPlayingCard key={el?.id} id={el.id} image={el?.poster_path} title={el?.title} years={el?.release_date} />;
+              })}
+            </Suspense>
           </div>
         </div>
       </div>
